@@ -20,7 +20,7 @@ import importlib.util
 
 TENSORFLOW = 'tensorflow'
 TORCH = 'torch'
-FOUND_TF = importlib.util.find_spec(TENSORFLOW) is not None
+FOUND_TF = False #importlib.util.find_spec(TENSORFLOW) is not None
 FOUND_TORCH = importlib.util.find_spec(TORCH) is not None
 
 
