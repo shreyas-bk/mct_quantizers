@@ -33,4 +33,4 @@ if constants.FOUND_TORCH:
     from mct_quantizers.pytorch.load_model import pytorch_load_quantized_model  # noqa: F401
     from mct_quantizers.pytorch.quantize_wrapper import PytorchQuantizationWrapper  # noqa: F401
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
