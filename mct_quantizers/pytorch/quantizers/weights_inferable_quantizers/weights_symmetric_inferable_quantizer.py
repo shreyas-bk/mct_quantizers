@@ -67,6 +67,8 @@ if FOUND_TORCH:
 
             self.scales = to_torch_tensor(self.scales).to(get_working_device())
             self.zero_points = torch.zeros(len(threshold), dtype=torch.int32).to(get_working_device())
+            # self.scales = to_torch_tensor(self.scales).to('cpu')
+            # self.zero_points = torch.zeros(len(threshold), dtype=torch.int32).to('cpu')
 
         def __call__(self, inputs: torch.Tensor) -> torch.Tensor:
             """
@@ -80,6 +82,9 @@ if FOUND_TORCH:
             """
             inputs.requires_grad = False
             if self.per_channel:
+                # if inputs.get_device()==-1:
+                #     self.scales.to('cpu')
+                #     self.zero_points.to('cpu')
                 return torch.fake_quantize_per_channel_affine(inputs,
                                                               self.scales,
                                                               self.zero_points,

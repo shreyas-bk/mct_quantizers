@@ -35,6 +35,7 @@ if FOUND_TORCH:
                      num_bits: int,
                      min_range: np.ndarray,
                      max_range: np.ndarray,
+                     range_multiplier
                      ):
             """
             Initialize the quantizer with the specified parameters.
@@ -46,7 +47,8 @@ if FOUND_TORCH:
             """
             super(ActivationUniformInferableQuantizer, self).__init__(num_bits=num_bits,
                                                                       min_range=min_range,
-                                                                      max_range=max_range)
+                                                                      max_range=max_range
+                                                                      )
 
             assert isinstance(min_range,
                               np.ndarray), f'min_range is expected to be numpy array, but is of type {type(min_range)}'
@@ -63,13 +65,19 @@ if FOUND_TORCH:
                                  f'of length 1 but is {len(max_range)}'
 
             # Activation is per-tensor thus we expect only a single min/max values
+            
             min_range = min_range[0]
             max_range = max_range[0]
+
+            min_range = min_range*range_multiplier
+            max_range = max_range*range_multiplier
 
             # fixing quantization range to include 0
             a = 0 if min_range > 0 else min_range
             b = 0 if max_range < 0 else max_range
-
+            self.range_max = b
+            self.range_min = a
+            # print(num_bits)
             self.scale = float((b - a) / ((2 ** num_bits) - 1))
             self.zero_point = int(-np.round(a / self.scale))  # zp has to be positive, and a <=0, so we multiply by -1
 
@@ -83,6 +91,7 @@ if FOUND_TORCH:
             Returns:
                 quantized tensor.
             """
+            # print('RANGES: ', self.range_min, self.range_max)
             return torch.fake_quantize_per_tensor_affine(inputs,
                                                          scale=self.scale,
                                                          zero_point=self.zero_point,
