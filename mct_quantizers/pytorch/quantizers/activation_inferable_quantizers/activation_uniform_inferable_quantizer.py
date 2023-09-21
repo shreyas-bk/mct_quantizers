@@ -77,7 +77,6 @@ if FOUND_TORCH:
             b = 0 if max_range < 0 else max_range
             self.range_max = b
             self.range_min = a
-            # print(num_bits)
             self.scale = float((b - a) / ((2 ** num_bits) - 1))
             self.zero_point = int(-np.round(a / self.scale))  # zp has to be positive, and a <=0, so we multiply by -1
 
@@ -92,6 +91,7 @@ if FOUND_TORCH:
                 quantized tensor.
             """
             # print('RANGES: ', self.range_min, self.range_max)
+            
             return torch.fake_quantize_per_tensor_affine(inputs,
                                                          scale=self.scale,
                                                          zero_point=self.zero_point,
